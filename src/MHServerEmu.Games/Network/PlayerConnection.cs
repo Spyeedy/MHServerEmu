@@ -142,6 +142,7 @@ namespace MHServerEmu.Games.Network
                 playerSettings.PlayerName = _dbAccount.PlayerName;
                 playerSettings.ArchiveSerializeType = ArchiveSerializeType.Database;
                 playerSettings.ArchiveData = _dbAccount.Player.ArchiveData;
+                playerSettings.PlayerCurrencyBalance = 9000;
 
                 Player = entityManager.CreateEntity(playerSettings) as Player;
             }

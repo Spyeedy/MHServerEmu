@@ -22,12 +22,12 @@ namespace MHServerEmu.Billing
         private static readonly string BillingDataDirectory = Path.Combine(FileHelper.DataDirectory, "Billing");
 
         private readonly Catalog _catalog;
-        private readonly long _currencyBalance;
+        //private long _currencyBalance;
 
         public BillingService()
         {
             var config = ConfigManager.Instance.GetConfig<BillingConfig>();
-            _currencyBalance = config.CurrencyBalance;
+            //_currencyBalance = config.CurrencyBalance;
 
             _catalog = FileHelper.DeserializeJson<Catalog>(Path.Combine(BillingDataDirectory, "Catalog.json"));
 
@@ -120,7 +120,7 @@ namespace MHServerEmu.Billing
         private void OnGetCurrencyBalance(Player player, MailboxMessage message)
         {
             player.SendMessage(NetMessageGetCurrencyBalanceResponse.CreateBuilder()
-                .SetCurrencyBalance(_currencyBalance)
+                .SetCurrencyBalance(player.CurrencyBalance)
                 .Build());
         }
 
@@ -135,6 +135,9 @@ namespace MHServerEmu.Billing
 
             CatalogEntry entry = _catalog.GetEntry(skuId);
             if (entry != null && entry.GuidItems.Length > 0)
+            if (entry != null)
+            {
+                if (entry.GuidItems.Length > 0)
             {
                 Prototype catalogItemProto = entry.GuidItems[0].ItemPrototypeRuntimeIdForClient.As<Prototype>();
 
@@ -163,6 +166,14 @@ namespace MHServerEmu.Billing
                     Logger.Trace($"OnBuyItemFromCatalog(): Player [{player}] purchased skuId={skuId}, catalogItemProto={catalogItemProto}");
             }
 
+                if (entry.LocalizedEntries.Length > 0)
+                {
+                    LocalizedCatalogEntry localEntry = entry.LocalizedEntries[0];
+                                         
+                    player.SetCurrencyBalance(player.CurrencyBalance - localEntry.ItemPrice);
+                }
+            }
+
             // Send buy response
             SendBuyItemResponse(player, result, buyItemFromCatalog.SkuId);
             return true;
@@ -172,7 +183,7 @@ namespace MHServerEmu.Billing
         {
             player.SendMessage(NetMessageBuyItemFromCatalogResponse.CreateBuilder()
                 .SetDidSucceed(errorCode == BuyItemResultErrorCodes.BUY_RESULT_ERROR_SUCCESS)
-                .SetCurrentCurrencyBalance(_currencyBalance)
+                .SetCurrentCurrencyBalance(player.CurrencyBalance)
                 .SetErrorcode(errorCode)
                 .SetSkuId(skuId)
                 .Build());

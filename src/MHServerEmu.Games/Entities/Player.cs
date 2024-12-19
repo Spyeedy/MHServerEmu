@@ -79,6 +79,7 @@ namespace MHServerEmu.Games.Entities
         private ulong[] _consoleAccountIds = new ulong[(int)PlayerAvatarIndex.Count];
         private RepString _secondaryPlayerName = new();
         private MatchQueueStatus _matchQueueStatus = new();
+        public long CurrencyBalance { get; private set; } = 0;
 
         // NOTE: EmailVerified and AccountCreationTimestamp are set in NetMessageGiftingRestrictionsUpdate that
         // should be sent in the packet right after logging in. NetMessageGetCurrencyBalanceResponse should be
@@ -165,6 +166,7 @@ namespace MHServerEmu.Games.Entities
 
             PlayerConnection = settings.PlayerConnection;
             _playerName.Set(settings.PlayerName);
+            CurrencyBalance = settings.PlayerCurrencyBalance;
 
             _shardId = 3;   // value from packet dumps
 
@@ -476,6 +478,11 @@ namespace MHServerEmu.Games.Entities
             AOI.SetRegion(0, true);
 
             base.ExitGame();
+        }
+
+        public void SetCurrencyBalance(long balance)
+        {
+            CurrencyBalance = balance;
         }
 
         public Region GetRegion()

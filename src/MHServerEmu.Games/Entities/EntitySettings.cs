@@ -71,6 +71,7 @@ namespace MHServerEmu.Games.Entities
         // Class-specific
         public PlayerConnection PlayerConnection { get; set; }      // For Player
         public string PlayerName { get; set; }
+        public long PlayerCurrencyBalance { get; set; }
 
         public ItemSpec ItemSpec { get; set; }                      // For Item
         public TimeSpan Lifespan { get; set; }
@@ -112,6 +113,7 @@ namespace MHServerEmu.Games.Entities
 
             PlayerConnection = null;
             PlayerName = null;
+            PlayerCurrencyBalance = 0;
 
             ItemSpec = null;
             Lifespan = default;
